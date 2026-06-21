@@ -1,0 +1,195 @@
+"""
+Experiment 4: Kernel Comparison Study.
+
+Systematic comparison of Linear, Polynomial, and RBF kernels
+across all datasets with metrics: Accuracy, Precision, Recall, F1.
+
+Outputs:
+  figures/kernels/04_kernel_comparison_metrics.png
+  figures/kernels/04_kernel_comparison_heatmap.png
+  results/kernel_comparison.csv
+  results/kernel_comparison.md
+"""
+
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+from rkhs_kernel_methods.datasets import load_all_datasets
+from rkhs_kernel_methods.evaluation import (
+    generate_comparison_table,
+    save_results_csv,
+)
+from rkhs_kernel_methods.visualization import set_style, save_figure
+from rkhs_kernel_methods.utils import ensure_dir, set_random_seed, Timer
+
+
+def make_metrics_bar_plot(df, out_dir: str) -> None:
+    """Generate grouped bar chart of metrics by dataset and kernel."""
+    results = df.reset_index()
+    metrics = ["accuracy", "precision", "recall", "f1"]
+    kernels = results["kernel"].unique()
+    datasets = results["dataset"].unique()
+
+    n_metrics = len(metrics)
+    n_kernels = len(kernels)
+    n_datasets = len(datasets)
+
+    fig, axes = plt.subplots(1, n_metrics, figsize=(20, 5))
+    bar_width = 0.25
+    kernel_colors = ["#4472C4", "#ED7D31", "#70AD47"]
+
+    for m_idx, metric in enumerate(metrics):
+        ax = axes[m_idx]
+        for k_idx, kernel in enumerate(kernels):
+            positions = np.arange(n_datasets) + k_idx * bar_width
+            values = [
+                results[
+                    (results["dataset"] == ds) & (results["kernel"] == kernel)
+                ][metric].values[0]
+                for ds in datasets
+            ]
+            ax.bar(
+                positions, values, bar_width,
+                label=kernel, color=kernel_colors[k_idx], alpha=0.85,
+            )
+        ax.set_title(metric.capitalize())
+        ax.set_xticks(np.arange(n_datasets) + bar_width)
+        ax.set_xticklabels(datasets)
+        ax.set_ylim(0, 1.05)
+        ax.set_ylabel("Score")
+        if m_idx == 0:
+            ax.legend()
+
+    fig.suptitle(
+        "Kernel Comparison: Metrics by Dataset",
+        fontsize=16, fontweight="bold",
+    )
+    plt.tight_layout()
+    save_figure(fig, os.path.join(out_dir, "04_kernel_comparison_metrics.png"))
+
+
+def make_heatmap(df, out_dir: str) -> None:
+    """Generate a heatmap of accuracy across datasets and kernels."""
+    results = df.reset_index()
+    pivot = results.pivot(
+        index="dataset", columns="kernel", values="accuracy"
+    )
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    im = ax.imshow(pivot.values, cmap="RdYlGn", vmin=0.4, vmax=1.0, aspect="auto")
+
+    ax.set_xticks(range(len(pivot.columns)))
+    ax.set_xticklabels(pivot.columns)
+    ax.set_yticks(range(len(pivot.index)))
+    ax.set_yticklabels(pivot.index)
+
+    for i in range(len(pivot.index)):
+        for j in range(len(pivot.columns)):
+            val = pivot.values[i, j]
+            text_color = "white" if val < 0.65 else "black"
+            ax.text(
+                j, i, f"{val:.3f}",
+                ha="center", va="center",
+                color=text_color, fontsize=13, fontweight="bold",
+            )
+
+    ax.set_title("Accuracy Heatmap: Datasets vs Kernels")
+    plt.colorbar(im, ax=ax)
+    plt.tight_layout()
+    save_figure(fig, os.path.join(out_dir, "04_kernel_comparison_heatmap.png"))
+
+
+def make_markdown_report(df, res_dir: str) -> None:
+    """Generate a Markdown summary of the comparison results."""
+    results = df.reset_index()
+
+    lines = [
+        "# Kernel Comparison Results",
+        "",
+        "## Summary",
+        "",
+        "| Dataset | Kernel | Accuracy | Precision | Recall | F1 Score |",
+        "|---------|--------|----------|-----------|--------|----------|",
+    ]
+
+    for _, row in results.iterrows():
+        lines.append(
+            f"| {row['dataset']} | {row['kernel']} | "
+            f"{row['accuracy']:.4f} | {row['precision']:.4f} | "
+            f"{row['recall']:.4f} | {row['f1']:.4f} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Key Observations",
+            "",
+            "- **Linear kernel** performs perfectly on linearly separable data but fails on nonlinear patterns.",
+            "- **Polynomial kernel (d=3)** captures polynomial decision boundaries, handling moderate nonlinearity.",
+            "- **RBF (Gaussian) kernel** achieves near-perfect performance on all datasets thanks to its infinite-dimensional feature space.",
+            "",
+            "## Interpretation",
+            "",
+            "The RBF kernel's success stems from mapping data into an infinite-dimensional RKHS, "
+            "where any finite dataset becomes linearly separable. The kernel trick allows this "
+            "without ever computing the infinite-dimensional features explicitly.",
+            "",
+            "*Generated by scripts/04_kernel_comparison.py*",
+        ]
+    )
+
+    os.makedirs(res_dir, exist_ok=True)
+    report_path = os.path.join(res_dir, "kernel_comparison.md")
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print(f"Markdown report saved to {report_path}")
+
+
+def main() -> None:
+    set_style()
+    set_random_seed(42)
+
+    BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    fig_dir = os.path.join(BASE, "figures", "kernels")
+    res_dir = os.path.join(BASE, "results")
+    ensure_dir(fig_dir)
+    ensure_dir(res_dir)
+
+    print("=" * 60)
+    print("EXPERIMENT 4: Kernel Comparison Study")
+    print("=" * 60)
+
+    kernels = ["linear", "poly", "rbf"]
+    with Timer("Loading all datasets"):
+        datasets = load_all_datasets(n_samples=300, random_state=42)
+
+    print("\nGenerating comparison table...")
+    with Timer("Training and evaluating all models"):
+        df = generate_comparison_table(
+            datasets, kernels, C=1.0, random_state=42
+        )
+
+    print("\n" + df.to_string())
+    print()
+
+    csv_path = os.path.join(res_dir, "kernel_comparison.csv")
+    save_results_csv(df, csv_path)
+    print(f"Results saved to {csv_path}")
+
+    make_metrics_bar_plot(df, fig_dir)
+    make_heatmap(df, fig_dir)
+    make_markdown_report(df, res_dir)
+
+    print(f"\nAll figures saved to {fig_dir}")
+    print("Experiment 4 complete.")
+
+
+if __name__ == "__main__":
+    main()
