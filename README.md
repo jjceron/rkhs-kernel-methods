@@ -7,7 +7,7 @@
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-%E2%89%A51.4.0-orange.svg)](https://scikit-learn.org/)
 [![tests](https://img.shields.io/badge/tests-41%2F41%20passing-brightgreen.svg)]()
 
----
+--- 
 
 ## Overview
 
