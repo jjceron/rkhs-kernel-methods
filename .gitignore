@@ -11,4 +11,4 @@ results/*.csv
 results/*.xlsx
 .vscode/
 .idea/
-*.egg
+*.egg 
