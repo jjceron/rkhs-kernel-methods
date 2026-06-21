@@ -1,1 +1,14 @@
 .venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.ipynb_checkpoints/
+.DS_Store
+results/*.csv
+results/*.xlsx
+.vscode/
+.idea/
+*.egg
