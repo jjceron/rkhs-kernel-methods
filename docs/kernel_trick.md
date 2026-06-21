@@ -5,11 +5,11 @@
 Linear classifiers are appealing — they are simple, interpretable, and admit convex objective functions. But they are fundamentally limited: a hyperplane cannot separate data that are not linearly separable. Consider the classic XOR problem in $\mathbb{R}^2$:
 
 ```
-    +          -
-        (0,1)   (1,1)
-        ----------
-        (0,0)   (1,0)
-    -          +
+        +          -
+            (0,1)   (1,1)
+            ~~~~~~~~~~
+            (0,0)   (1,0)
+        -          +
 ```
 
 No line can separate the classes {(0,0), (1,1)} from {(0,1), (1,0)}. Yet these points are trivially separable by a nonlinear decision surface.
@@ -42,11 +42,11 @@ The $\sqrt{2}$ factors ensure that $\langle \varphi(\mathbf{x}), \varphi(\mathbf
 
 The Gaussian (RBF) kernel
 
-$$k(\mathbf{x}, \mathbf{z}) = \exp\left(-\frac{\\|\mathbf{x} - \mathbf{z}\\|^2}{2\sigma^2}\right)$$
+$$k(\mathbf{x}, \mathbf{z}) = \exp\left(-\frac{\|\mathbf{x} - \mathbf{z}\|^2}{2\sigma^2}\right)$$
 
 can be expressed as an inner product in an infinite-dimensional feature space:
 
-$$\varphi(\mathbf{x}) = e^{-\\|\mathbf{x}\\|^2/2\sigma^2} \left( 1, \sqrt{\frac{1}{1!\sigma^2}} x_1, \dots, \sqrt{\frac{1}{k!\sigma^{2k}}} x_1^k, \dots \right)$$
+$$\varphi(\mathbf{x}) = e^{-\|\mathbf{x}\|^2/2\sigma^2} \left( 1, \sqrt{\frac{1}{1!\sigma^2}} x_1, \dots, \sqrt{\frac{1}{k!\sigma^{2k}}} x_1^k, \dots \right)$$
 
 Explicit construction of this vector is practically impossible — yet the kernel $k(\mathbf{x}, \mathbf{z})$ can be evaluated in $O(d)$ time. This is the kernel trick.
 
@@ -87,11 +87,11 @@ Formally, for any algorithm whose training and prediction steps depend on data o
 
 The dual SVM with kernels becomes:
 
-$$\max_{\boldsymbol{\alpha}} \; \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j \\, k(\mathbf{x}_i, \mathbf{x}_j)$$
+$$\max_{\boldsymbol{\alpha}} \; \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j \, k(\mathbf{x}_i, \mathbf{x}_j)$$
 
 subject to $0 \leq \alpha_i \leq C$ and $\sum_i \alpha_i y_i = 0$. The decision function:
 
-$$f(\mathbf{x}) = \operatorname{sign}\left( \sum_{i=1}^n \alpha_i y_i \\, k(\mathbf{x}_i, \mathbf{x}) + b \right)$$
+$$f(\mathbf{x}) = \operatorname{sign}\left( \sum_{i=1}^n \alpha_i y_i \, k(\mathbf{x}_i, \mathbf{x}) + b \right)$$
 
 The **kernel matrix** (or Gram matrix) $\mathbf{K}$ has entries $K_{ij} = k(\mathbf{x}_i, \mathbf{x}_j)$. The dual objective is a quadratic form in $\mathbf{K}$.
 
@@ -125,7 +125,7 @@ The constant $c$ trades off the influence of higher-order versus lower-order ter
 
 ### 5.4 Gaussian RBF Kernel
 
-$$k(\mathbf{x}, \mathbf{z}) = \exp\left( -\frac{\\|\mathbf{x} - \mathbf{z}\\|^2}{2\sigma^2} \right) = \exp\left( -\gamma \\|\mathbf{x} - \mathbf{z}\\|^2 \right)$$
+$$k(\mathbf{x}, \mathbf{z}) = \exp\left( -\frac{\|\mathbf{x} - \mathbf{z}\|^2}{2\sigma^2} \right) = \exp\left( -\gamma \|\mathbf{x} - \mathbf{z}\|^2 \right)$$
 
 where $\gamma = 1/(2\sigma^2)$. The RBF kernel is arguably the most widely used kernel in practice because:
 
@@ -136,13 +136,13 @@ where $\gamma = 1/(2\sigma^2)$. The RBF kernel is arguably the most widely used 
 
 Using the Taylor expansion $e^{t} = \sum_{k=0}^\infty \frac{t^k}{k!}$:
 
-$$k(\mathbf{x}, \mathbf{z}) = e^{-\\|\mathbf{x}\\|^2/2\sigma^2} e^{-\\|\mathbf{z}\\|^2/2\sigma^2} \sum_{k=0}^\infty \frac{(\mathbf{x} \cdot \mathbf{z})^k}{\sigma^{2k} k!}$$
+$$k(\mathbf{x}, \mathbf{z}) = e^{-\|\mathbf{x}\|^2/2\sigma^2} e^{-\|\mathbf{z}\|^2/2\sigma^2} \sum_{k=0}^\infty \frac{(\mathbf{x} \cdot \mathbf{z})^k}{\sigma^{2k} k!}$$
 
 revealing that the feature space is the direct sum of all homogeneous polynomial spaces of every degree.
 
 ### 5.5 Sigmoid Kernel
 
-$$k(\mathbf{x}, \mathbf{z}) = \tanh(\kappa \\, \mathbf{x} \cdot \mathbf{z} + \theta)$$
+$$k(\mathbf{x}, \mathbf{z}) = \tanh(\kappa \, \mathbf{x} \cdot \mathbf{z} + \theta)$$
 
 This kernel is related to two-layer neural networks but is **not** positive definite for all parameter choices — it must be used with care.
 
@@ -172,7 +172,7 @@ The Gram matrix encodes all pairwise similarities between training points. In th
 - The dual has $n$ variables.
 - Computing $\mathbf{K}$ takes $O(n^2 d)$ time.
 - Solving the QP takes between $O(n^2)$ and $O(n^3)$ depending on implementation.
-- Prediction for a new point costs $O(n_{\text{SV}} \\, d) \approx O(n d)$.
+- Prediction for a new point costs $O(n_{\text{SV}} \, d) \approx O(n d)$.
 
 For large $n$, these costs motivate scalable approximations (e.g., Nystrom method, random Fourier features).
 

@@ -16,9 +16,9 @@ This document develops Mercer's theorem with maximum intuition and minimal techn
 
 ### 2.1 Definition
 
-A kernel $k: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is **positive semidefinite (PSD)** if for any finite set of points $\\{ \mathbf{x}_1, \dots, \mathbf{x}_n \\} \subseteq \mathcal{X}$ and any real coefficients $c_1, \dots, c_n$, the following quadratic form is nonnegative:
+A kernel $k: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is **positive semidefinite (PSD)** if for any finite set of points $\{ \mathbf{x}_1, \dots, \mathbf{x}_n \} \subseteq \mathcal{X}$ and any real coefficients $c_1, \dots, c_n$, the following quadratic form is nonnegative:
 
-$$\sum_{i=1}^n \sum_{j=1}^n c_i c_j \\, k(\mathbf{x}_i, \mathbf{x}_j) \geq 0$$
+$$\sum_{i=1}^n \sum_{j=1}^n c_i c_j \, k(\mathbf{x}_i, \mathbf{x}_j) \geq 0$$
 
 In matrix terms: the **Gram matrix** $\mathbf{K}$ with entries $K_{ij} = k(\mathbf{x}_i, \mathbf{x}_j)$ must be positive semidefinite for every choice of points.
 
@@ -37,7 +37,7 @@ Think of the Gram matrix as a table of pairwise similarities. The PSD condition 
 
 Mercer's theorem concerns a **continuous** analogue of the Gram matrix. For a compact metric space $\mathcal{X}$ and a finite measure $\mu$ on $\mathcal{X}$, define the **integral operator** $T_k: L^2(\mathcal{X}, \mu) \to L^2(\mathcal{X}, \mu)$ by
 
-$$(T_k f)(\mathbf{x}) = \int_{\mathcal{X}} k(\mathbf{x}, \mathbf{z}) f(\mathbf{z}) \\, d\mu(\mathbf{z})$$
+$$(T_k f)(\mathbf{x}) = \int_{\mathcal{X}} k(\mathbf{x}, \mathbf{z}) f(\mathbf{z}) \, d\mu(\mathbf{z})$$
 
 If $k$ is continuous and PSD, then $T_k$ is:
 - **Compact** (maps bounded sets to relatively compact sets).
@@ -56,7 +56,7 @@ where $\{ \phi_i \}$ is an orthonormal basis of $L^2(\mathcal{X}, \mu)$ consisti
 
 **Theorem (Mercer, 1909).** Let $\mathcal{X}$ be a compact metric space and let $\mu$ be a finite Borel measure with support $\mathcal{X}$. Let $k: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ be a continuous, symmetric, positive semidefinite kernel. Then there exist nonnegative eigenvalues $\lambda_1 \geq \lambda_2 \geq \cdots \geq 0$ and continuous eigenfunctions $\phi_i \in L^2(\mathcal{X}, \mu)$ such that
 
-$$\boxed{ k(\mathbf{x}, \mathbf{z}) = \sum_{i=1}^\infty \lambda_i \\, \phi_i(\mathbf{x}) \\, \phi_i(\mathbf{z}) }$$
+$$\boxed{ k(\mathbf{x}, \mathbf{z}) = \sum_{i=1}^\infty \lambda_i \, \phi_i(\mathbf{x}) \, \phi_i(\mathbf{z}) }$$
 
 The series converges **absolutely** and **uniformly** on $\mathcal{X} \times \mathcal{X}$.
 
@@ -76,7 +76,7 @@ The series converges **absolutely** and **uniformly** on $\mathcal{X} \times \ma
 
 Mercer's expansion directly provides a feature map. Define
 
-$$\varphi(\mathbf{x}) = \left( \sqrt{\lambda_1} \\, \phi_1(\mathbf{x}),\; \sqrt{\lambda_2} \\, \phi_2(\mathbf{x}),\; \dots \right) \in \ell^2$$
+$$\varphi(\mathbf{x}) = \left( \sqrt{\lambda_1} \, \phi_1(\mathbf{x}),\; \sqrt{\lambda_2} \, \phi_2(\mathbf{x}),\; \dots \right) \in \ell^2$$
 
 Then
 
@@ -92,7 +92,7 @@ The Mercer expansion decomposes the kernel into **orthogonal spectral components
 
 The Mercer expansion provides the canonical feature map $\varphi(\mathbf{x}) = (\sqrt{\lambda_i} \phi_i(\mathbf{x}))_{i=1}^\infty \in \ell^2$. The RKHS $\mathcal{H}_k$ can be characterized as
 
-$$\mathcal{H}_k = \left\\{ f = \sum_{i=1}^\infty a_i \phi_i \;\Bigg|\; \sum_{i=1}^\infty \frac{a_i^2}{\lambda_i} < \infty \right\\}$$
+$$\mathcal{H}_k = \left\{ f = \sum_{i=1}^\infty a_i \phi_i \;\Bigg|\; \sum_{i=1}^\infty \frac{a_i^2}{\lambda_i} < \infty \right\}$$
 
 with inner product
 
@@ -162,7 +162,7 @@ The Mercer expansion has finitely many nonzero eigenvalues (the feature space is
 
 With Gaussian measure $d\mu(\mathbf{x}) = (2\pi)^{-d/2} e^{-\|\mathbf{x}\|^2/2} d\mathbf{x}$, the eigenfunctions of the RBF kernel are **Hermite polynomials**, and the eigenvalues are
 
-$$\lambda_{\mathbf{k}} = \sqrt{\frac{2a}{A}} \left( 1 - \\, \frac{1}{A} \right)^{|\mathbf{k}|}$$
+$$\lambda_{\mathbf{k}} = \sqrt{\frac{2a}{A}} \left( 1 - \, \frac{1}{A} \right)^{|\mathbf{k}|}$$
 
 where $a$ is the kernel bandwidth parameter, $A = a + b + c$ involves the measure bandwidth, and $\mathbf{k}$ is a multi-index. The eigenvalues decay geometrically, confirming extreme smoothness.
 

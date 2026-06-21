@@ -28,7 +28,7 @@ A **Hilbert space** $\mathcal{H}$ is a complete inner product space. For our pur
 
 In machine learning, we are interested in Hilbert spaces whose elements are **functions** from an input set $\mathcal{X}$ to $\mathbb{R}$, not just finite-dimensional vectors.
 
-A function space $\mathcal{H} \subseteq \\{ f : \mathcal{X} \to \mathbb{R} \\}$ is a Hilbert space if there exists an inner product $\langle \cdot, \cdot \rangle_{\mathcal{H}}$ under which $\mathcal{H}$ is complete.
+A function space $\mathcal{H} \subseteq \{ f : \mathcal{X} \to \mathbb{R} \}$ is a Hilbert space if there exists an inner product $\langle \cdot, \cdot \rangle_{\mathcal{H}}$ under which $\mathcal{H}$ is complete.
 
 However, not every Hilbert space of functions has the "nice" property that **evaluation at a point** is continuous. For the theory of kernel methods, this property is essential.
 
@@ -50,7 +50,7 @@ In a general Hilbert space of functions, $L_x$ may not be continuous: small chan
 
 A Hilbert space $\mathcal{H}$ of functions $f: \mathcal{X} \to \mathbb{R}$ is a **Reproducing Kernel Hilbert Space** if for every $x \in \mathcal{X}$, the evaluation functional $L_x: f \mapsto f(x)$ is bounded, i.e.,
 
-$$\exists M_x > 0 \text{ such that } |L_x(f)| = |f(x)| \leq M_x \\|f\\|_{\mathcal{H}} \quad \forall f \in \mathcal{H}$$
+$$\exists M_x > 0 \text{ such that } |L_x(f)| = |f(x)| \leq M_x \|f\|_{\mathcal{H}} \quad \forall f \in \mathcal{H}$$
 
 This property has far-reaching consequences.
 
@@ -64,7 +64,7 @@ $$L_x(f) = \langle f, k_x \rangle_{\mathcal{H}} \quad \forall f \in \mathcal{H}$
 
 In other words:
 
-$$\boxed{ f(x) = \langle f, k(\\\cdot, x) \\rangle_{\mathcal{H}} }$$
+$$\boxed{ f(x) = \langle f, k(\cdot, x) \rangle_{\mathcal{H}} }$$
 
 where $k_x(\cdot) = k(\cdot, x)$. This is the **reproducing property** — the function value at any point can be "reproduced" as the inner product with a kernel function centered at that point.
 
@@ -98,13 +98,13 @@ Every RKHS comes with a unique **reproducing kernel** $k$, and every positive de
 
 **Sketch of construction:**
 
-1. Start with the pre-Hilbert space $\mathcal{H}_0 = \operatorname{span}\\{ k(\cdot, x) : x \in \mathcal{X} \\}$, i.e., all finite linear combinations:
+1. Start with the pre-Hilbert space $\mathcal{H}_0 = \operatorname{span}\{ k(\cdot, x) : x \in \mathcal{X} \}$, i.e., all finite linear combinations:
 
    $$f = \sum_{i=1}^m \alpha_i k(\cdot, x_i)$$
 
 2. Define the inner product for $f = \sum_i \alpha_i k(\cdot, x_i)$ and $g = \sum_j \beta_j k(\cdot, y_j)$ as
 
-   $$\langle f, g \rangle_{\mathcal{H}} = \sum_{i=1}^m \sum_{j=1}^n \alpha_i \beta_j \\, k(x_i, y_j)$$
+   $$\langle f, g \rangle_{\mathcal{H}} = \sum_{i=1}^m \sum_{j=1}^n \alpha_i \beta_j \, k(x_i, y_j)$$
 
    Positive definiteness of $k$ guarantees this is a well-defined inner product.
 
@@ -122,13 +122,13 @@ The functions $k(\cdot, x)$ thus act as "basis atoms" that span the whole space.
 
 Think of the kernel $k(\cdot, x)$ as a **bump function** centered at $x$. The RKHS $\mathcal{H}_k$ is the space of all weighted superpositions of these bumps:
 
-$$f = \sum_{i=1}^\infty \alpha_i \\, k(\cdot, x_i)$$
+$$f = \sum_{i=1}^\infty \alpha_i \, k(\cdot, x_i)$$
 
 The inner product aligns with the geometry induced by $k$: two functions are close in $\mathcal{H}_k$ norm if they are similar on training points, as measured by $k$.
 
 The norm $\|f\|_{\mathcal{H}_k}$ measures the **smoothness** or **complexity** of $f$ with respect to the kernel. Functions that oscillate rapidly in the metric induced by $k$ have large norm; functions that are smooth (i.e., representable with few kernel atoms) have small norm. This makes $\|f\|_{\mathcal{H}}$ a natural regularizer:
 
-$$\min_{f \in \mathcal{H}_k} \; \sum_{i=1}^n L(y_i, f(x_i)) + \lambda \\|f\\|_{\mathcal{H}}^2$$
+$$\min_{f \in \mathcal{H}_k} \; \sum_{i=1}^n L(y_i, f(x_i)) + \lambda \|f\|_{\mathcal{H}}^2$$
 
 ---
 
@@ -138,11 +138,11 @@ $$\min_{f \in \mathcal{H}_k} \; \sum_{i=1}^n L(y_i, f(x_i)) + \lambda \\|f\\|_{\
 
 **Theorem (Kimeldorf & Wahba, 1971; Scholkopf et al., 2001).** Let $\mathcal{H}_k$ be an RKHS with kernel $k$, let $\lambda > 0$, and let $L$ be any loss function depending on $f$ only through $f(x_1), \dots, f(x_n)$. Then any minimizer of
 
-$$\min_{f \in \mathcal{H}_k} \; \sum_{i=1}^n L(y_i, f(x_i)) + \lambda \\|f\\|_{\mathcal{H}}^2$$
+$$\min_{f \in \mathcal{H}_k} \; \sum_{i=1}^n L(y_i, f(x_i)) + \lambda \|f\|_{\mathcal{H}}^2$$
 
 admits a representation of the form
 
-$$f^\star = \sum_{i=1}^n \alpha_i \\, k(\cdot, x_i)$$
+$$f^\star = \sum_{i=1}^n \alpha_i \, k(\cdot, x_i)$$
 
 where $\alpha_i \in \mathbb{R}$.
 
@@ -154,13 +154,13 @@ The representer theorem is profound: although $\mathcal{H}_k$ may be **infinite-
 
 The SVM optimization can be recast in RKHS terms:
 
-$$\min_{f \in \mathcal{H}_k} \; \frac{1}{2}\\|f\\|_{\mathcal{H}}^2 + C \sum_{i=1}^n \max(0, 1 - y_i f(x_i))$$
+$$\min_{f \in \mathcal{H}_k} \; \frac{1}{2}\|f\|_{\mathcal{H}}^2 + C \sum_{i=1}^n \max(0, 1 - y_i f(x_i))$$
 
 By the representer theorem, $f^\star = \sum_i \alpha_i k(\cdot, x_i)$, and the problem reduces to the familiar SVM dual in $\boldsymbol{\alpha}$.
 
 ### 9.4 Proof Sketch
 
-Decompose any $f \in \mathcal{H}_k$ as $f = f_\parallel + f_\perp$, where $f_\parallel \in \operatorname{span}\\{k(\cdot, x_i)\\}$ and $f_\perp$ is orthogonal to this span. Then:
+Decompose any $f \in \mathcal{H}_k$ as $f = f_\parallel + f_\perp$, where $f_\parallel \in \operatorname{span}\{k(\cdot, x_i)\}$ and $f_\perp$ is orthogonal to this span. Then:
 - $f_\perp(x_i) = \langle f_\perp, k(\cdot, x_i) \rangle = 0$ for all $i$, so $f_\perp$ does not affect the loss term.
 - But $\|f\|^2 = \|f_\parallel\|^2 + \|f_\perp\|^2 \geq \|f_\parallel\|^2$.
 
@@ -172,7 +172,7 @@ Thus $f_\perp$ only increases the objective — the optimal $f$ must have $f_\pe
 
 The RKHS norm measures function complexity. For the Gaussian RBF kernel:
 
-$$\|f\|_{\mathcal{H}}^2 = \int_{\mathbb{R}^d} \sum_{m=0}^\infty \frac{\sigma^{2m}}{m! \\, 2^m} \\, (\mathcal{D}^m f)^2 \\, d\rho(x)$$
+$$\|f\|_{\mathcal{H}}^2 = \int_{\mathbb{R}^d} \sum_{m=0}^\infty \frac{\sigma^{2m}}{m! \, 2^m} \, (\mathcal{D}^m f)^2 \, d\rho(x)$$
 
 where $\mathcal{D}^m$ is the $m$-th order derivative operator and $\rho$ is a Gaussian measure. This reveals a precise connection: smoothing with an RBF kernel penalizes **all** derivatives of $f$ — higher-order derivatives are penalized more when $\sigma$ is large, and less when $\sigma$ is small. This is why $\sigma$ controls the smoothness of the learned function.
 
@@ -213,11 +213,11 @@ The RKHS consists of all polynomials of degree $\leq m$, with a norm that penali
 
 ### 12.3 Gaussian RBF Kernel
 
-$$k(\mathbf{x}, \mathbf{y}) = \exp\left( -\frac{\\|\mathbf{x} - \mathbf{y}\\|^2}{2\sigma^2} \right)$$
+$$k(\mathbf{x}, \mathbf{y}) = \exp\left( -\frac{\|\mathbf{x} - \mathbf{y}\|^2}{2\sigma^2} \right)$$
 
 The RKHS is an infinite-dimensional space of smooth functions. It can be described explicitly as a weighted Sobolev space:
 
-$$\mathcal{H}_k = \left\\{ f \in L^2(\mathbb{R}^d) : \int \| \hat{f}(\omega) \|^2 \\, e^{\sigma^2 \|\omega\|^2 / 2} \\, d\omega < \infty \right\\}$$
+$$\mathcal{H}_k = \left\{ f \in L^2(\mathbb{R}^d) : \int \| \hat{f}(\omega) \|^2 \, e^{\sigma^2 \|\omega\|^2 / 2} \, d\omega < \infty \right\}$$
 
 where $\hat{f}$ is the Fourier transform of $f$. The condition demands that the Fourier transform of $f$ decay faster than a Gaussian — i.e., $f$ must be infinitely differentiable and extremely smooth.
 
